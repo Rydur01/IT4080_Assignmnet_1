@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEditor.PackageManager;
+using System.Linq;
 
 public class Arena1Game : NetworkBehaviour
 {
     public Player playerPrefab;
+    public Player hostPrefab;
     public Camera arenaCamera;
 
     private int positionIndex = 0;
@@ -26,18 +28,7 @@ public class Arena1Game : NetworkBehaviour
         Color.magenta,
     };
 
-    private Color NextColor()
-    {
-        Color newColor = playerColors[colorIndex];
-        colorIndex += 1;
-        if (colorIndex > playerColors.Length - 1)
-        {
-            colorIndex = 0;
-        }
-        return newColor;
-    }
-
-    // Start is called before teh first frame
+    // Start is called before the first frame
     void Start()
     {
         arenaCamera.enabled = !IsClient;
@@ -59,12 +50,32 @@ public class Arena1Game : NetworkBehaviour
         return pos;
     }
 
+    private Color NextColor()
+    {
+        Color newColor = playerColors[colorIndex];
+        colorIndex += 1;
+        if (colorIndex > playerColors.Length - 1)
+        {
+            colorIndex = 0;
+        }
+        return newColor;
+    }
 
     private void SpawnPlayers()
     {
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
+        foreach(ulong clientId in NetworkManager.ConnectedClientsIds)
         {
-            Player playerSpawn = Instantiate(playerPrefab, NextPosition(), Quaternion.identity);
+            Player prefab;
+            if (clientId == 0)
+            {
+                prefab = hostPrefab;
+            }
+            else
+            {
+                prefab = playerPrefab;
+            }
+
+            Player playerSpawn = Instantiate(prefab, NextPosition(), Quaternion.identity);
             playerSpawn.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
             playerSpawn.playerColorNetVar.Value = NextColor();
         }

@@ -3,7 +3,9 @@ guid: 99e66b528ed74a243b2734b70a1647c0
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - playerPrefab: {instanceID: 0}
+  - arenaCamera: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

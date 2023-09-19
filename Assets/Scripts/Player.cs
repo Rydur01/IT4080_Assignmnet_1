@@ -7,10 +7,12 @@ public class Player : NetworkBehaviour
 {
     public float movementSpeed = 50f;
     public float rotationSpeed = 130f;
-    public NetworkVariable<Color> playerColorNetVar= new NetworkVariable<Color>(Color.red);
+    public NetworkVariable<Color> playerColorNetVar = new NetworkVariable<Color>();
 
     private Camera playerCamera;
     private GameObject playerBody;
+
+    private Vector3 initialPosition;
 
     private void Start()
     {
@@ -19,7 +21,16 @@ public class Player : NetworkBehaviour
         playerCamera.GetComponent<AudioListener>().enabled = IsOwner;
 
         playerBody = transform.Find("PlayerBody").gameObject;
-        ApplyColor();
+
+        initialPosition = transform.position;
+
+        StartCoroutine(DelayedApplyColor()); // color cannot be called in start because it loads to fast and the color is always red on client
+    }
+
+    private IEnumerator DelayedApplyColor()
+    {
+        yield return new WaitForSeconds(1.0f); // Wait for 1 second
+        ApplyColor(); // Call the ApplyColor method after the delay
     }
 
     private void Update()
@@ -34,10 +45,35 @@ public class Player : NetworkBehaviour
     {
         Vector3 movement = CalcMovement();
         Vector3 rotation = CalcRotation();
-        if(movement != Vector3.zero || rotation != Vector3.zero)
+
+        if (movement != Vector3.zero || rotation != Vector3.zero)
         {
-            MoveServerRpc(CalcMovement(), CalcRotation());
+            //MoveServerRpc(CalcMovement(), CalcRotation());
+            Vector3 newPosition = transform.position + movement;
+
+            // Check if the new position is within bounds
+            if (!IsServer)
+            {
+                if (IsPositionWithinBounds(newPosition))
+                {
+                    MoveServerRpc(movement, rotation);
+                }
+            }
+            else
+            {
+                MoveServerRpc(movement, rotation);
+            }
+            
         }
+    }
+
+    private bool IsPositionWithinBounds(Vector3 position)
+    {
+        Vector3 minBounds = initialPosition + new Vector3(-25f, 0f, -25f);
+        Vector3 maxBounds = initialPosition + new Vector3(25f, 0f, 25f);
+
+        return position.x >= minBounds.x && position.x <= maxBounds.x &&
+               position.z >= minBounds.z && position.z <= maxBounds.z;
     }
 
     private void ApplyColor()
