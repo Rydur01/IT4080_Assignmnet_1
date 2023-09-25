@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using UnityEditor.PackageManager;
 using System.Linq;
 
 public class Arena1Game : NetworkBehaviour
