@@ -8,6 +8,7 @@ public class ChatServer : NetworkBehaviour
     public ChatUi chatUi;
     const ulong SYSTEM_ID = ulong.MaxValue;
     private ulong[] dmClientIds = new ulong[2];
+    private ulong[] dmClientError = new ulong[1];
 
     // Start is called before the first frame update
     void Start()
@@ -18,6 +19,7 @@ public class ChatServer : NetworkBehaviour
         if (IsServer)
         {
             NetworkManager.OnClientConnectedCallback += ServerOnClientConnected;
+            NetworkManager.OnClientDisconnectCallback += ServerOnClientDisconnected;
             if (IsHost)
             {
                 DisplayMessageLocally(SYSTEM_ID, $"You are the host And client {NetworkManager.LocalClientId}");
@@ -39,6 +41,12 @@ public class ChatServer : NetworkBehaviour
             $"I ({NetworkManager.LocalClientId}) see you ({clientId}) have connected to the server, well done",
             NetworkManager.LocalClientId,
             clientId);
+
+        RecieveChatMessageClientRpc($"Client {clientId} has connected.", SYSTEM_ID);
+    }
+    private void ServerOnClientDisconnected(ulong clientId)
+    {
+        RecieveChatMessageClientRpc($"Client {clientId} has disconnected.", SYSTEM_ID);
     }
 
     private void DisplayMessageLocally(ulong from, string message)
@@ -73,9 +81,17 @@ public class ChatServer : NetworkBehaviour
         {
             string[] parts = message.Split(" ");
             string clientIdStr = parts[0].Replace("@", "");
-            ulong toClientId = ulong.Parse(clientIdStr);
+            //ulong toClientId = ulong.Parse(clientIdStr);
 
-            ServerSendDirectMessage(message, serverRpcParams.Receive.SenderClientId, toClientId);
+            if (ulong.TryParse(clientIdStr, out ulong toClientId) && NetworkManager.Singleton.ConnectedClients.ContainsKey(toClientId))
+            {
+                ServerSendDirectMessage(message, serverRpcParams.Receive.SenderClientId, toClientId);
+            }
+            else
+            {
+                string errorMessage = "Invalid recipient. Message not sent.";
+                ServerSendDirectMessage(errorMessage, serverRpcParams.Receive.SenderClientId, ulong.MaxValue);
+            }
         }
         else
         {
@@ -94,10 +110,20 @@ public class ChatServer : NetworkBehaviour
     {
         dmClientIds[0] = from;
         dmClientIds[1] = to;
+        dmClientError[0] = from;
 
         ClientRpcParams rpcParams = default;
-        rpcParams.Send.TargetClientIds = dmClientIds;
+        
 
-        RecieveChatMessageClientRpc($"<whisper> {message}", from, rpcParams);
+        if (to == ulong.MaxValue)
+        {
+            rpcParams.Send.TargetClientIds = dmClientError;
+            RecieveChatMessageClientRpc($"{message}", from, rpcParams);
+        }
+        else
+        {
+            rpcParams.Send.TargetClientIds = dmClientIds;
+            RecieveChatMessageClientRpc($"<whisper> {message}", from, rpcParams);
+        }
     }
 }
