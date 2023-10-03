@@ -5,16 +5,16 @@ using Unity.Netcode;
 
 public class Player : NetworkBehaviour
 {
+    public NetworkVariable<Color> playerColor = new NetworkVariable<Color>();
+
     public float movementSpeed = 50f;
     public float rotationSpeed = 130f;
-    public NetworkVariable<Color> playerColorNetVar = new NetworkVariable<Color>();
-
     private Camera playerCamera;
     private GameObject playerBody;
 
     private Vector3 initialPosition;
 
-    private void Start()
+    private void NetworkInit()
     {
         playerCamera = transform.Find("Camera").GetComponent<Camera>();
         playerCamera.enabled = IsOwner;
@@ -24,13 +24,43 @@ public class Player : NetworkBehaviour
 
         initialPosition = transform.position;
 
+        //ApplyPlayerColor();
         StartCoroutine(DelayedApplyColor()); // color cannot be called in start because it loads to fast and the color is always red on client
+    }
+
+    private void Awake()
+    {
+        NetworkHelper.Log(this, "Awake");
+    }
+
+    private void Start()
+    {
+        NetworkHelper.Log(this, "Start");
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        NetworkHelper.Log(this, "OnNetworkSpawn");
+        NetworkInit();
+        base.OnNetworkSpawn();
     }
 
     private IEnumerator DelayedApplyColor()
     {
         yield return new WaitForSeconds(1.0f); // Wait for 1 second
-        ApplyColor(); // Call the ApplyColor method after the delay
+        ApplyPlayerColor(); // Call the ApplyColor method after the delay
+        playerColor.OnValueChanged += OnPlayerColorChanged;
+    }
+
+    private void ApplyPlayerColor()
+    {
+        NetworkHelper.Log(this, $"Applying color {playerColor.Value}");
+        playerBody.GetComponent<MeshRenderer>().material.color = playerColor.Value;
+    }
+
+    public void OnPlayerColorChanged(Color previous, Color Current)
+    {
+        ApplyPlayerColor();
     }
 
     private void Update()
@@ -74,11 +104,6 @@ public class Player : NetworkBehaviour
 
         return position.x >= minBounds.x && position.x <= maxBounds.x &&
                position.z >= minBounds.z && position.z <= maxBounds.z;
-    }
-
-    private void ApplyColor()
-    {
-        playerBody.GetComponent<MeshRenderer>().material.color = playerColorNetVar.Value;
     }
 
     [ServerRpc(RequireOwnership = true)]
