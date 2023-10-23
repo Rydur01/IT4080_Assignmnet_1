@@ -13,7 +13,10 @@ public class PowerUpSpawner : NetworkBehaviour
 
     private void Start()
     {
-        SpawnPowerUp();
+        if (IsServer)
+        {
+            SpawnPowerUp();
+        }
     }
 
     private void Update()

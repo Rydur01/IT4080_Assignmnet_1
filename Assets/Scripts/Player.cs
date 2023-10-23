@@ -155,8 +155,8 @@ public class Player : NetworkBehaviour
 
     private bool IsPositionWithinBounds(Vector3 position)
     {
-        Vector3 minBounds = initialPosition + new Vector3(-25f, 0f, -25f);
-        Vector3 maxBounds = initialPosition + new Vector3(25f, 0f, 25f);
+        Vector3 minBounds = initialPosition + new Vector3(-50f, 0f, -50f);
+        Vector3 maxBounds = initialPosition + new Vector3(50f, 0f, 50f);
 
         return position.x >= minBounds.x && position.x <= maxBounds.x &&
                position.z >= minBounds.z && position.z <= maxBounds.z;
