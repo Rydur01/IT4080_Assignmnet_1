@@ -69,6 +69,18 @@ public class Player : NetworkBehaviour
         }
     }
 
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (IsServer)
+        {
+            if (other.CompareTag("power_up"))
+            {
+                other.GetComponent<BasePowerUp>().ServerPickUp(this);
+            }
+        }
+    }
+
     
     private void ServerHandleCollision(Collision collision)
     {
