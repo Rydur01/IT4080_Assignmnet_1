@@ -22,6 +22,6 @@ public struct NetworkPlayerInfo : INetworkSerializable, System.IEquatable<Networ
 
     public bool Equals(NetworkPlayerInfo other)
     {
-        return false;
+        return clientId == other.clientId;
     }
 }

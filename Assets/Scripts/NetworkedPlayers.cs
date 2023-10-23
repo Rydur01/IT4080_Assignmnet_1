@@ -19,7 +19,6 @@ public class NetworkedPlayers : NetworkBehaviour
         {
             ServerStart();
         }
-        NetworkHelper.Log($"player count = {allNetPlayers.Count}");
     }
 
     void ServerStart()
