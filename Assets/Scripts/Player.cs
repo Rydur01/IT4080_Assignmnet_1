@@ -6,6 +6,9 @@ using Unity.Netcode;
 public class Player : NetworkBehaviour
 {
     public NetworkVariable<Color> playerColor = new NetworkVariable<Color>();
+    public NetworkVariable<int> ScoreNetVar = new NetworkVariable<int>(0);
+
+    public BulletSpawner bulletSpawner;
 
     public float movementSpeed = 50f;
     public float rotationSpeed = 130f;
@@ -26,6 +29,11 @@ public class Player : NetworkBehaviour
 
         //ApplyPlayerColor();
         StartCoroutine(DelayedApplyColor()); // color cannot be called in start because it loads to fast and the color is always red on client
+
+        if (IsClient)
+        {
+            ScoreNetVar.OnValueChanged += ClientOnScoreValueChanged;
+        }
     }
 
     private void Awake()
@@ -43,6 +51,37 @@ public class Player : NetworkBehaviour
         NetworkHelper.Log(this, "OnNetworkSpawn");
         NetworkInit();
         base.OnNetworkSpawn();
+    }
+
+    private void ClientOnScoreValueChanged(int old, int current)
+    {
+        if (IsOwner)
+        {
+            NetworkHelper.Log(this, $"My score is {ScoreNetVar.Value}");
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (IsServer)
+        {
+            ServerHandleCollision(collision);
+        }
+    }
+
+    
+    private void ServerHandleCollision(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("bullet"))
+        {
+            ulong ownerId = collision.gameObject.GetComponent<NetworkObject>().OwnerClientId;
+            NetworkHelper.Log(this,
+                $"Hit by {collision.gameObject.name} " +
+                $"owned by {ownerId}");
+            Player other = NetworkManager.Singleton.ConnectedClients[ownerId].PlayerObject.GetComponent<Player>();
+            other.ScoreNetVar.Value += 1;
+            Destroy(collision.gameObject);
+        }
     }
 
     private IEnumerator DelayedApplyColor()
@@ -68,6 +107,11 @@ public class Player : NetworkBehaviour
         if (IsOwner)
         {
             OwnerHandleInput();
+            if (Input.GetButtonDown("Fire1"))
+            {
+                NetworkHelper.Log("Requesting Fire");
+                bulletSpawner.FireServerRpc();
+            }
         }
     }
 
