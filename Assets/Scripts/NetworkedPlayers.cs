@@ -29,16 +29,17 @@ public class NetworkedPlayers : NetworkBehaviour
         if (IsServer)
         {
             ServerStart();
+            NetworkManager.OnClientConnectedCallback += ServerOnClientConnected;
+            NetworkManager.OnClientDisconnectCallback += ServerOnClientDisconnected;
         }
     }
 
     void ServerStart()
     {
-        NetworkManager.OnClientConnectedCallback += ServerOnClientConnected;
-
         NetworkPlayerInfo host = new NetworkPlayerInfo(NetworkManager.LocalClientId);
         host.ready = true;
         host.color = NextColor();
+        host.playerName = "The Host";
         allNetPlayers.Add(host);
     }
 
@@ -47,7 +48,17 @@ public class NetworkedPlayers : NetworkBehaviour
         NetworkPlayerInfo client = new NetworkPlayerInfo(clientId);
         client.ready = false;
         client.color = NextColor();
+        client.playerName = $"Player {clientId}";
         allNetPlayers.Add(client);
+    }
+
+    private void ServerOnClientDisconnected(ulong clientId)
+    {
+        var idx = FindPlayerIndex(clientId);
+        if (idx != -1)
+        {
+            allNetPlayers.RemoveAt(idx);
+        }
     }
 
     private Color NextColor()
@@ -98,5 +109,29 @@ public class NetworkedPlayers : NetworkBehaviour
         NetworkPlayerInfo info = allNetPlayers[idx];
         info.ready = ready;
         allNetPlayers[idx] = info;
+    }
+
+    public void UpdatePlayerName (ulong clientId, string playerName)
+    {
+        int idx = FindPlayerIndex(clientId);
+        if (idx == -1)
+        {
+            return;
+        }
+
+        NetworkPlayerInfo info = allNetPlayers[idx];
+        info.playerName = playerName;
+        allNetPlayers[idx] = info;
+    }
+
+    public NetworkPlayerInfo GetMyPlayerInfo()
+    {
+        NetworkPlayerInfo toReturn = new NetworkPlayerInfo(ulong.MaxValue);
+        int idx = FindPlayerIndex(NetworkManager.LocalClientId);
+        if (idx != -1)
+        {
+            toReturn = allNetPlayers[idx];
+        }
+        return toReturn;
     }
 }
