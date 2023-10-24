@@ -134,4 +134,17 @@ public class NetworkedPlayers : NetworkBehaviour
         }
         return toReturn;
     }
+
+
+    public bool AllPlayersReady()
+    {
+        bool theyAre = true;
+        int idx = 0;
+        while (theyAre && idx < allNetPlayers.Count)
+        {
+            theyAre = allNetPlayers[idx].ready;
+            idx += 1;
+        }
+        return theyAre;
+    }
 }

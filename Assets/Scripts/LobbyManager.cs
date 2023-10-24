@@ -52,7 +52,6 @@ public class LobbyManager : NetworkBehaviour
     {
         NetworkManager.SceneManager.LoadScene(
             "Arena1Game",
-            //"TestChat",
             UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 }

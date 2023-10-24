@@ -12,8 +12,9 @@ public class Lobby : NetworkBehaviour
         if (IsServer)
         {
             ServerPopulateCards();
-            networkedPlayers.allNetPlayers.OnListChanged += ServerOnNetworkedPlayersChanged;
+            networkedPlayers.allNetPlayers.OnListChanged += ServerNetPlayersChanged;
             lobbyUi.ShowStart(true);
+            lobbyUi.OnStartClicked += ServerStartClicked;
         }
         else
         {
@@ -62,7 +63,13 @@ public class Lobby : NetworkBehaviour
             pc.OnKickClicked += ServerOnKickClicked;
             pc.UpdateDisplay();
         }
-        PopulateMyInfo();
+    }
+
+    private void ServerStartClicked()
+    {
+        NetworkManager.SceneManager.LoadScene(
+            "Arena1Game",
+            UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 
     private void ClientPopulateCards()
@@ -78,7 +85,6 @@ public class Lobby : NetworkBehaviour
             pc.ShowKick(false);
             pc.UpdateDisplay();
         }
-        PopulateMyInfo();
     }
 
     private void ClientOnReadyToggled(bool newValue)
@@ -86,9 +92,11 @@ public class Lobby : NetworkBehaviour
         UpdateReadyServerRpc(newValue);
     }
 
-    private void ServerOnNetworkedPlayersChanged(NetworkListEvent<NetworkPlayerInfo> changeEvent)
+    private void ServerNetPlayersChanged(NetworkListEvent<NetworkPlayerInfo> changeEvent)
     {
         ServerPopulateCards();
+        PopulateMyInfo();
+        lobbyUi.EnableStart(networkedPlayers.AllPlayersReady());
     }
 
     private void ServerOnKickClicked(ulong clientId)
@@ -99,6 +107,7 @@ public class Lobby : NetworkBehaviour
     private void ClientNetPlayerChanged(NetworkListEvent<NetworkPlayerInfo> changeEvent)
     {
         ClientPopulateCards();
+        PopulateMyInfo();
     }
 
     private void ClientOnClientDisconnect(ulong clientId)
