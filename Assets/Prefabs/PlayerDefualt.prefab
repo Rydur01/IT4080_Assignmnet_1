@@ -633,6 +633,8 @@ GameObject:
   - component: {fileID: 4225537141546846214}
   - component: {fileID: 3120935556206067965}
   - component: {fileID: -5480812491899482523}
+  - component: {fileID: 2073797614117116424}
+  - component: {fileID: 6785674368666124319}
   m_Layer: 0
   m_Name: PlayerDefualt
   m_TagString: Untagged
@@ -770,7 +772,171 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthUIWS: {fileID: 5206726320347504035}
-  healthUISP: {fileID: 0}
+--- !u!114 &2073797614117116424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5812250614552453896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afe28ffa337862b429a62b39a4b55135, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6785674368666124319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5812250614552453896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0072d4910eab4a47bc2be425833da22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  score:
+    m_InternalValue: 0
+  playerNumber:
+    m_InternalValue: 0
+  playerName:
+    m_InternalValue:
+      utf8LengthInBytes: 0
+      bytes:
+        offset0000:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0016:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0032:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0048:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0064:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0080:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0096:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        byte0112: 0
+        byte0113: 0
+        byte0114: 0
+        byte0115: 0
+        byte0116: 0
+        byte0117: 0
+        byte0118: 0
+        byte0119: 0
+        byte0120: 0
+        byte0121: 0
+        byte0122: 0
+        byte0123: 0
+        byte0124: 0
+        byte0125: 0
 --- !u!1 &5812250614658464594
 GameObject:
   m_ObjectHideFlags: 0
