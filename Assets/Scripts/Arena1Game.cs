@@ -10,6 +10,15 @@ public class Arena1Game : NetworkBehaviour
     public Player hostPrefab;
     public Camera arenaCamera;
     private NetworkedPlayers networkedPlayers;
+    //public GameObject healthPickups;
+
+    //private int hpPositionIndex = 0;
+    //private Vector3[] healthPickupPositions = new Vector3[]
+    //{
+    //    new Vector3(-21f, 1.25f, -47f),
+    //    new Vector3(-11f, 1.25f, -30f),
+    //    new Vector3(-41f, 1.25f, -38f)
+    //};
 
     private int positionIndex = 0;
     private Vector3[] startPositions = new Vector3[]
@@ -33,6 +42,7 @@ public class Arena1Game : NetworkBehaviour
         if (IsServer)
         {
             SpawnPlayers();
+            //SpawnHealthPickUps();
         }
     }
 
@@ -46,6 +56,17 @@ public class Arena1Game : NetworkBehaviour
         }
         return pos;
     }
+
+    //private Vector3 HPPickupNextPosition()
+    //{
+    //    Vector3 pos = healthPickupPositions[hpPositionIndex];
+    //    hpPositionIndex += 1;
+    //    if (hpPositionIndex > healthPickupPositions.Length - 1)
+    //    {
+    //        hpPositionIndex = 0;
+    //    }
+    //    return pos;
+    //}
 
 
     private void SpawnPlayers()
@@ -67,4 +88,13 @@ public class Arena1Game : NetworkBehaviour
             playerSpawn.playerColor.Value = info.color;
         }
     }
+
+    //private void SpawnHealthPickUps()
+    //{
+    //    foreach (Vector3 hpSpawnLoc in healthPickupPositions)
+    //    {
+    //        GameObject hpPickup = Instantiate(healthPickups, HPPickupNextPosition(), Quaternion.identity);
+    //        hpPickup.GetComponent<NetworkObject>().Spawn();
+    //    }
+    //}
 }

@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using ParrelSync.NonCore;
 
 public class Player : NetworkBehaviour
 {
     public NetworkVariable<Color> playerColor = new NetworkVariable<Color>();
     public NetworkVariable<int> ScoreNetVar = new NetworkVariable<int>(0);
+    public NetworkVariable<int> playerHP = new NetworkVariable<int>();
 
     public BulletSpawner bulletSpawner;
 
@@ -51,6 +53,7 @@ public class Player : NetworkBehaviour
         NetworkHelper.Log(this, "OnNetworkSpawn");
         NetworkInit();
         base.OnNetworkSpawn();
+        playerHP.Value = 100;
     }
 
     private void ClientOnScoreValueChanged(int old, int current)
@@ -78,13 +81,23 @@ public class Player : NetworkBehaviour
             {
                 other.GetComponent<BasePowerUp>().ServerPickUp(this);
             }
+            //else if (other.CompareTag(""))
+            //{
+            //    playerHP.Value += 50;
+            //}
         }
     }
 
-    
+    public void Heal(int amount)
+    {
+        // Add any additional logic for healing here
+        playerHP.Value += amount;
+    }
+
+
     private void ServerHandleCollision(Collision collision)
     {
-        if(collision.gameObject.CompareTag("bullet"))
+        if (collision.gameObject.CompareTag("bullet"))
         {
             ulong ownerId = collision.gameObject.GetComponent<NetworkObject>().OwnerClientId;
             NetworkHelper.Log(this,
@@ -92,8 +105,10 @@ public class Player : NetworkBehaviour
                 $"owned by {ownerId}");
             Player other = NetworkManager.Singleton.ConnectedClients[ownerId].PlayerObject.GetComponent<Player>();
             other.ScoreNetVar.Value += 1;
+            playerHP.Value -= 10;
             Destroy(collision.gameObject);
         }
+        //else if (collision.gameObject.CompareTag("HealthPickup"));
     }
 
     private IEnumerator DelayedApplyColor()
@@ -140,10 +155,11 @@ public class Player : NetworkBehaviour
             // Check if the new position is within bounds
             if (!IsServer)
             {
-                if (IsPositionWithinBounds(newPosition))
-                {
-                    MoveServerRpc(movement, rotation);
-                }
+                MoveServerRpc(movement, rotation);
+                //if (IsPositionWithinBounds(newPosition))
+                //{
+                //    MoveServerRpc(movement, rotation);
+                //}
             }
             else
             {
